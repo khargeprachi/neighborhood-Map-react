@@ -162,11 +162,26 @@ makeMarkers=(locations,map)=>{
           infowindow.addListener('closeclick', function() {
             infowindow.marker = null;
           });
-          //InfoAPI.get(marker.title.replace(/ /g,'_')).then((result)=> {
-          InfoAPI.foursquareGet(marker.title).then((result)=> {
-            infowindow.setContent(`<img src="${result}">`+`<div>${marker.title}<br> ${marker.address}</div>`);
 
-          })
+          InfoAPI.foursquareGet(marker.position.lat(),marker.position.lng(),marker.title)
+          .then((venue_id)=> {
+          //  if(venue_id){
+              InfoAPI.getPhoto(venue_id)
+              .then(url=>
+                {var html
+                  if(url){
+                    html=`<img src="${url}" alt=${marker.title}>`
+                  }
+                  else {
+                    html=`<h4>Image not available</h4>`
+                  }
+                infowindow.setContent(html+`<div>${marker.title}<br> ${marker.address}</div>`)
+
+              })
+            //  .catch((error)=>window.alert(error))
+          //  }
+
+        });
           infowindow.open(map, marker);
           this.setState({
             infowindow:infowindow
