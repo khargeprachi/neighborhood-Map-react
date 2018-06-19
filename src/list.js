@@ -36,7 +36,7 @@ var width
 {if(this.props.open===true){
 
   if(window.screen.availWidth<=770 && window.screen.availWidth>=450){
-    console.log('it is')
+
     width=40;
   } else if (window.screen.availWidth<450){
     width=60;
@@ -64,11 +64,10 @@ const style={
 
 
       <ul id="list">
-
       {
-        showingLocations.map((location)=>(
-          <li key={location.id}>
-            <button key={location.id}  onClick={(event)=>{this.handleClick(event.target.textContent)}} >
+        showingLocations.map((location,i)=>(
+          <li key={i}>
+            <button key={location.place_id}  onClick={(event)=>{this.handleClick(event.target.textContent)}} >
             <div key={location.name} id="list-entry" >{location.name}</div>
             </button>
           </li>
