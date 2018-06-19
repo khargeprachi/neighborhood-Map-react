@@ -6,28 +6,27 @@ export default class OurMap extends Component {
 
   render () {
     var width,left;
-    { if(this.props.open===true) {
-        if(window.screen.availWidth<=770 && window.screen.availWidth>=450){
+        if(this.props.open===true && window.screen.availWidth<=770 && window.screen.availWidth>=450){
           width=60;
           left=40;
-        } else if (window.screen.availWidth<450){
+        } else if (this.props.open===true && window.screen.availWidth<450){
           width=40;
           left=60;
         }
-          else if (window.screen.availWidth>770) {
+          else if (this.props.open===true && window.screen.availWidth>770) {
             width=80;
             left=20;
         }
-      }
+
       else {
         width=100;
         left=0;
       }
-    }
+    
 
     const style = {
        width: `${width}vw`,
-       height: '95vh' ,
+       height: '90vh' ,
        position:'absolute',
        float:'right',
        top:'5vh',

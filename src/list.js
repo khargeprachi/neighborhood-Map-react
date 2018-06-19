@@ -33,22 +33,19 @@ showingLocations=this.props.locations.filter((location)=>match.test(location.nam
 
 
 var width
-{if(this.props.open===true){
 
-  if(window.screen.availWidth<=770 && window.screen.availWidth>=450){
-
+  if(this.props.open===true && window.screen.availWidth<=770 && window.screen.availWidth>=450){
     width=40;
-  } else if (window.screen.availWidth<450){
+  } else if (this.props.open===true && window.screen.availWidth<450){
     width=60;
-  } else {
+  } else if (this.props.open===true && window.screen.availWidth>770){
     width=20;
   }
 
-} else {
+ else {
   width=0;
 }
 
-}
 const style={
   width:`${width}vw`
 }

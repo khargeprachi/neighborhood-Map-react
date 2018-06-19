@@ -168,7 +168,7 @@ class App extends Component {
     return (
       <div className="App">
         <div id="navbar">
-          <div id="menu" tabindex="1">
+          <div id="menu" tabIndex="1">
             <HamburgerMenu  aria-label='Menu'
               aria-controls='navigation'  color='white' width={20} height={20} isOpen={this.state.open}
             menuClicked={this.handleClick.bind(this)}></HamburgerMenu>
@@ -182,6 +182,9 @@ class App extends Component {
           </List>
           </div>
         )}
+        <div className="footer">
+        <h5>Images in this page are retrived from Foursquare.com</h5>
+        </div>
       </div>
     )
   }
