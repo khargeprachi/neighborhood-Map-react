@@ -3,12 +3,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 
 ##Neighborhood Map (react)
-
 This project used create-react-app to create a listing of all Colleges in the specified neighborhood and highlight their location on the map . On clicking on every marker and the list option, an infoWindow pops up which display information about the current location. This information includes The college name, address and an image.
 
-#Dependecnies and How to start
-
-This is uses create-react-app, npm install and npm start to begin.
+#Dependencies and How to start
+This is uses create-react-app, npm install and npm run build to begin.
 Maps are loaded using Google Maps API. We install 'google-maps-react' and 'fetch-google-maps'.
 We need to register, create a project and get a Maps Javascript API key from google.
 
