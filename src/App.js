@@ -5,6 +5,7 @@ import './App.css';
 import List from './list.js';
 import OurMap from './map.js';
 import HamburgerMenu from 'react-hamburger-menu';
+const fetchGoogleMaps = require('fetch-google-maps');
 class App extends Component {
   state={
     open:true,
@@ -45,182 +46,143 @@ class App extends Component {
     map:{},
     markers:[],
     infowindow:new this.props.google.maps.InfoWindow()
-
   }
 
-  toggleBounce = (marker) => {
-          if (marker.getAnimation() != null) {
-              marker.setAnimation(null);
-          } else {
-              marker.setAnimation(this.props.google.maps.Animation.BOUNCE);
-          }
-      }
+  componentDidMount = () => {
+    const {google} = this.props; // sets props equal to google
+    fetchGoogleMaps({
+      apiKey: 'AIzaSyBBCQlQh8WUvSGTWW3OIMlrdTLQsNmzkLU',
+    	language: 'en',
+    	libraries: ['geometry','places']
+    })
+    .then(( Maps ) => {
+      const map = new Maps.Map(document.getElementById('map'), {
+    	   zoom: 11,
+    		 center: new Maps.LatLng(19.0759837,72.87765590000004)
+    	});
 
-  loadMap=() => {
-    if (this.props && this.props.google) { // checks to make sure that props have been passed
-   const {google} = this.props; // sets props equal to google
-   const maps = google.maps; // sets maps to google maps props
-
-//   this.mapRef = React.createRef();
-//const node = ReactDOM.findDOMNode(this.mapRef.current);
-//  const node = ReactDOM.findDOMNode(mapRef); // finds the 'map' div in the React DOM, names it node
-
-   const mapConfig = Object.assign({}, {
-     center: {lat:19.0759837, lng: 72.87765590000004}, // sets center of google map to NYC.
-     zoom: 11, // sets zoom. Lower numbers are zoomed further out.
-     mapTypeId: 'roadmap' // optional main map layer. Terrain, satellite, hybrid or roadmap--if unspecified, defaults to roadmap.
-   })
-
-
-   var map = new maps.Map(document.getElementById('map'), mapConfig);
-
-
-
-   this.setState({
-     map:map
-   })
-
-
-//query results places apikey
-
-   var self=this;
-   google.maps.event.addListener(map, 'tilesloaded', function() {
-
-    self.searchPlaces(map);
-    google.maps.event.clearListeners(map, 'tilesloaded');
+      this.setState({map})
+      var self=this;
+      google.maps.event.addListener(map, 'tilesloaded', function() {
+        self.searchPlaces(map);
+        google.maps.event.clearListeners(map, 'tilesloaded');
       });
-
+    })
+    .catch((error)=> this.setState({map:{}}))
+  }
+  toggleBounce = (marker) => {
+      if (marker.getAnimation() != null) {
+          marker.setAnimation(null);
+      } else {
+          marker.setAnimation(this.props.google.maps.Animation.BOUNCE);
+      }
   }
 
-
-}
-
-searchPlaces= (map)=> {
-   const {google} = this.props;
-  var bounds = map.getBounds();
-
+  searchPlaces= (map)=> {
+    const {google} = this.props;
     var self=this;
     var placesService = new google.maps.places.PlacesService(map);
     placesService.textSearch({
-      //query: document.getElementById('places-search').value,
-      query:'college',
-      bounds: bounds
-    }, function(results, status) {
+        query:'college',
+        bounds: map.getBounds()
+      },
+        function(results, status) {
+          self.setState({locations:results})
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            self.makeMarkers(results,map);
+          }
+        }
+    );
 
+  }
 
-      self.setState({locations:results})
-      if (status === google.maps.places.PlacesServiceStatus.OK) {
-        //console.log(results);
-      self.makeMarkers(results,map);
-      }
-    });
-
-}
-makeMarkers=(locations,map)=>{
-  //console.log(locations)
-  var markers=[];
-  this.state.markers.forEach((marker)=> {
-    marker.setMap(null)
-  })
-  locations.forEach(location => { // iterate through locations saved in state
-     const marker = new this.props.google.maps.Marker({ // creates a new Google maps Marker object.
-       position: {lat: location.geometry.location.lat(), lng: location.geometry.location.lng()}, // sets position of marker to specified location
-       map: map, // sets markers to appear on the map we just created on line 35
-       animation: this.props.google.maps.Animation.DROP,
-       //title: location.name+'<br>'+location.formatted_address // the title of the marker is set to the name of the location
-       title: location.name ,
-       address:location.formatted_address// the title of the marker is set to the name of the location
-     });
-     markers.push(marker);
-     var self=this;
-     marker.addListener('click', function() {
-        //  console.log(marker);
-        //self.toggleBounce(marker);
-
-            //  setTimeout(self.toggleBounce(marker), 3000);
-               self.populateInfoWindow(this,this.map);
-
-             });
-   })
-   //console.log(markers);
-   this.setState({
-
-     markers:markers
-  })
-}
+  makeMarkers = (locations,map) => {
+    var markers=[]; //array to store all the markers
+    this.state.markers.forEach((marker)=> {
+      marker.setMap(null)
+    })
+    locations.forEach(location => {
+      const marker = new this.props.google.maps.Marker({ //  new Google maps Marker
+        position: {lat: location.geometry.location.lat(), lng: location.geometry.location.lng()},
+        map: map,
+        animation: this.props.google.maps.Animation.DROP,
+        title: location.name ,
+        address:location.formatted_address
+      });
+      markers.push(marker);
+      var self=this;
+      marker.addListener('click', function() {
+        self.populateInfoWindow(this,this.map);//open infowindow on Click event
+      });
+    })
+    this.setState({
+      markers:markers
+    })
+  }
 
   populateInfoWindow=(marker,map)=> {
-  //console.log(marker);
-  this.toggleBounce(marker);
-
-      setTimeout(this.toggleBounce(marker), 1500);
-  var infowindow=this.state.infowindow
-  if (infowindow.marker !== marker) {
-          // Clear the infowindow content to give the streetview time to load.
-          infowindow.marker = marker;
-          // Make sure the marker property is cleared if the infowindow is closed.
-          infowindow.addListener('closeclick', function() {
-            infowindow.marker = null;
-          });
-
-          InfoAPI.foursquareGet(marker.position.lat(),marker.position.lng(),marker.title)
-          .then((venue_id)=> {
+    this.toggleBounce(marker);
+    setTimeout(this.toggleBounce(marker), 1500);
+    var infowindow=this.state.infowindow
+    if (infowindow.marker !== marker) {
+      infowindow.marker = marker;
+      infowindow.addListener('closeclick', function() {
+        infowindow.marker = null;
+      });
+      var html=`<h4>Image not available</h4>`;
+    InfoAPI.foursquareGet(marker.position.lat(),marker.position.lng(),marker.title)
+      .then((venue_id)=> {
           //  if(venue_id){
-              InfoAPI.getPhoto(venue_id)
-              .then(url=>
-                {var html
-                  if(url){
-                    html=`<img src="${url}" alt=${marker.title}>`
-                  }
-                  else {
-                    html=`<h4>Image not available</h4>`
-                  }
-                infowindow.setContent(html+`<div>${marker.title}<br> ${marker.address}</div>`)
+        InfoAPI.getPhoto(venue_id)
+        .then(url=>
+          {
+            if(url){
+              html=`<img src="${url}" alt=${marker.title}>`
+            }
+            else {
+              html=`<h4>Image not available</h4>`
+            }
+            infowindow.setContent(html+`<div>${marker.title}<br> ${marker.address}</div>`)
 
-              })
-            //  .catch((error)=>window.alert(error))
-          //  }
-
-        });
-          infowindow.open(map, marker);
-          this.setState({
-            infowindow:infowindow
           })
+          infowindow.open(map, marker);
+      })
+      .catch((error)=>{
+        infowindow.setContent(html+`<div>${marker.title}<br> ${marker.address}</div>`)
+        infowindow.open(map, marker);
+
+      });
+        this.setState({
+          infowindow:infowindow
+        })
     }
   }
-handleClick= () => {
-  this.setState({
-    open:!this.state.open
-  })
-}
+  handleClick= () => {
+    this.setState({
+      open:!this.state.open
+    })
+  }
   render() {
     return (
       <div className="App">
-
-<div id="navbar">
-<div id="menu">
-  <HamburgerMenu color='white' width={20} height={20} isOpen={this.state.open}
-  menuClicked={this.handleClick.bind(this)}></HamburgerMenu>
-</div><h2>Colleges in Mumbai</h2></div>
-<OurMap loadMap={this.loadMap} open={this.state.open} locations={this.state.locations} google={this.props.google} maps={this.state.maps} populateInfoWindow={this.populateInfoWindow}/>
-{this.state.open && (
-<div>
-  <List handleClick={this.handleClick} open={this.state.open} makeMarkers={this.makeMarkers} locations={this.state.locations} markers={this.state.markers} infowindow={this.state.infowindow} map={this.state.map} google={this.props.google} populateInfoWindow={this.populateInfoWindow}>
-  </List>
-  </div>
-)}
-
-
-</div>
-)}
-
-
-
-
-
-
-
-
+        <div id="navbar">
+          <div id="menu">
+            <HamburgerMenu  aria-label='Menu'
+              aria-controls='navigation'  color='white' width={20} height={20} isOpen={this.state.open}
+            menuClicked={this.handleClick.bind(this)}></HamburgerMenu>
+          </div>
+          <h2>Colleges in Mumbai</h2>
+        </div>
+        <OurMap open={this.state.open} locations={this.state.locations} google={this.props.google}  populateInfoWindow={this.populateInfoWindow}/>
+        {this.state.open && (
+          <div>
+          <List handleClick={this.handleClick} open={this.state.open} makeMarkers={this.makeMarkers} locations={this.state.locations} markers={this.state.markers} infowindow={this.state.infowindow} map={this.state.map} google={this.props.google} populateInfoWindow={this.populateInfoWindow}>
+          </List>
+          </div>
+        )}
+      </div>
+    )
+  }
 }
 export default GoogleApiWrapper({
    apiKey: 'AIzaSyBBCQlQh8WUvSGTWW3OIMlrdTLQsNmzkLU',

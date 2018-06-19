@@ -57,7 +57,7 @@ const style={
 
     <div id="searchBox">
     <form id="inputForm"  >
-    <input type="text" id="inputValue" value={this.state.query} onInput={(event)=>this.handleInput(event) } placeholder="Search by College Name"></input>
+    <input type="text" id="inputValue" value={this.state.query} onInput={(event)=>this.handleInput(event) } aria-label="Filter by College Name" placeholder="Search by College Name"></input>
     <input type="button" value="filter" onClick={()=>this.filter(showingLocations)}/>
     </form>
     </div>
@@ -68,9 +68,9 @@ const style={
       {
         showingLocations.map((location)=>(
           <li key={location.id}>
-          <button key={location.id}  onClick={(event)=>{this.handleClick(event.target.textContent)}} >
-          <div key={location.id} id="list-entry" >{location.name}</div>
-          </button>
+            <button key={location.id}  onClick={(event)=>{this.handleClick(event.target.textContent)}} >
+            <div key={location.name} id="list-entry" >{location.name}</div>
+            </button>
           </li>
         ))
       }
