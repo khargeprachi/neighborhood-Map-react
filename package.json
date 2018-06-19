@@ -1,11 +1,13 @@
 {
-  "name": "tracker", 
+  "name": "tracker",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "escape-string-regexp": "^1.0.5",
     "google-maps-react": "^1.1.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-hamburger-menu": "^1.1.1",
     "react-scripts": "1.0.13"
   },
   "scripts": {
@@ -15,6 +17,7 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
+    "fetch-google-maps": "^2.0.1",
     "google-maps": "^3.2.1"
   }
 }
