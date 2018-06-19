@@ -166,7 +166,7 @@ class App extends Component {
     return (
       <div className="App">
         <div id="navbar">
-          <div id="menu">
+          <div id="menu" tabindex="1">
             <HamburgerMenu  aria-label='Menu'
               aria-controls='navigation'  color='white' width={20} height={20} isOpen={this.state.open}
             menuClicked={this.handleClick.bind(this)}></HamburgerMenu>
