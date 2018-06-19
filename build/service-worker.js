@@ -27,7 +27,7 @@ addToCache = (name,request,response) => {
 }
 self.addEventListener( "fetch" ,(event) => {
     //fetch request as specified by event object
-console.log(event.request);
+//console.log(event.request);
     event.respondWith(
         fetch(event.request)
         .then((response) => {
