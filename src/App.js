@@ -47,8 +47,11 @@ class App extends Component {
     markers:[],
     infowindow:new this.props.google.maps.InfoWindow()
   }
-
+  gm_authFailure(){
+      window.alert("Google Maps error!")
+  }
   componentDidMount = () => {
+    window.gm_authFailure = this.gm_authFailure;
     const {google} = this.props; // sets props equal to google
     fetchGoogleMaps({
       apiKey: 'AIzaSyBBCQlQh8WUvSGTWW3OIMlrdTLQsNmzkLU',
@@ -132,7 +135,6 @@ class App extends Component {
       var html=`<h4>Image not available</h4>`;
     InfoAPI.foursquareGet(marker.position.lat(),marker.position.lng(),marker.title)
       .then((venue_id)=> {
-          //  if(venue_id){
         InfoAPI.getPhoto(venue_id)
         .then(url=>
           {

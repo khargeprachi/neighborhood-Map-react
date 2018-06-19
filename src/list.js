@@ -63,7 +63,7 @@ const style={
     </div>
 
 
-      <ul id="list">
+      <ul id="list" role="group">
       {
         showingLocations.map((location,i)=>(
           <li key={i}>
