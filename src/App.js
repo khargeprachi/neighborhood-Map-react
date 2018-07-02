@@ -54,7 +54,7 @@ class App extends Component {
     window.gm_authFailure = this.gm_authFailure;
     const {google} = this.props; // sets props equal to google
     fetchGoogleMaps({
-      apiKey: 'AIzaSyBBCQlQh8WUvSGTWW3OIMlrdTLQsNmzkLU',
+      apiKey: 'YOUR-API-KEY',
     	language: 'en',
     	libraries: ['geometry','places']
     })
@@ -190,6 +190,6 @@ class App extends Component {
   }
 }
 export default GoogleApiWrapper({
-   apiKey: 'AIzaSyBBCQlQh8WUvSGTWW3OIMlrdTLQsNmzkLU',
+   apiKey: 'YOUR-API-KEY',
    libraries: ['geometry','places']
  })(App)
